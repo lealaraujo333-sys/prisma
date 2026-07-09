@@ -1,0 +1,19 @@
+{
+  "contacts": [
+    {
+      "name": "Yngrid Tiradentes",
+      "company": "Sorria Bem",
+      "email": "yngridi@gmail.com",
+      "phone": "21977542233",
+      "status": "Lead",
+      "stage": "Qualificação",
+      "value": "497",
+      "source": "Outro",
+      "notes": "Gerente do time comercial",
+      "id": 1782913284551,
+      "createdAt": "2026-07-01T13:41:24.551Z",
+      "color": "#6C5CE7",
+      "createdBy": 1782847166314
+    }
+  ]
+}

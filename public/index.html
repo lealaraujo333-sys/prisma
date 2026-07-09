@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PRISMA — Seu Departamento de Tecnologia Completo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --p:#5B5CFF;--v:#A675FF;--pk:#C084FC;
+  --dark:#08080F;--dark2:#0D0D1C;--dark3:#111128;
+  --card:#12122A;--card2:#0F0F24;
+  --border:rgba(91,92,255,0.18);--border2:rgba(166,117,255,0.15);
+  --white:#FFFFFF;--muted:rgba(255,255,255,0.48);--muted2:rgba(255,255,255,0.28);
+  --glass:rgba(255,255,255,0.04);--r:14px;
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{background:var(--dark);color:var(--white);font-family:'Inter',sans-serif;line-height:1.6;overflow-x:hidden}
+::selection{background:rgba(91,92,255,0.35);color:#fff}
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:var(--dark)}
+::-webkit-scrollbar-thumb{background:rgba(91,92,255,0.4);border-radius:3px}
+#canvas-bg{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0.6}
+nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:0 5%;height:70px;background:rgba(8,8,15,0.7);backdrop-filter:blur(20px) saturate(180%);border-bottom:1px solid var(--border);transition:background .3s}
+nav.scrolled{background:rgba(8,8,15,0.92)}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.logo-mark{width:34px;height:34px}
+.logo-text{font-size:1.15rem;font-weight:800;letter-spacing:.1em;color:#fff}
+.nav-center{display:flex;gap:0;list-style:none}
+.nav-center a{color:var(--muted);text-decoration:none;font-size:.875rem;font-weight:500;padding:.5rem 1rem;border-radius:8px;transition:color .2s,background .2s}
+.nav-center a:hover{color:#fff;background:rgba(255,255,255,0.06)}
+.nav-right{display:flex;align-items:center;gap:.75rem}
+.btn-nav-ghost{color:var(--muted);border:1px solid var(--border);background:transparent;padding:.5rem 1.1rem;border-radius:8px;font-size:.875rem;font-weight:500;cursor:pointer;text-decoration:none;transition:all .2s;font-family:'Inter',sans-serif}
+.btn-nav-ghost:hover{color:#fff;border-color:rgba(91,92,255,.5)}
+.btn-nav-primary{background:linear-gradient(135deg,var(--p),var(--v));color:#fff;border:none;padding:.55rem 1.25rem;border-radius:8px;font-size:.875rem;font-weight:600;cursor:pointer;text-decoration:none;box-shadow:0 0 20px rgba(91,92,255,.35);transition:all .2s;font-family:'Inter',sans-serif;position:relative;overflow:hidden}
+.btn-nav-primary::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--v),var(--pk));opacity:0;transition:opacity .3s}
+.btn-nav-primary:hover::before{opacity:1}
+.btn-nav-primary span{position:relative;z-index:1}
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10rem 5% 6rem;text-align:center;position:relative;z-index:1}
+.hero-noise{position:absolute;inset:0;z-index:0;background:radial-gradient(ellipse 80% 60% at 50% -10%,rgba(91,92,255,.18) 0%,transparent 65%),radial-gradient(ellipse 50% 50% at 90% 80%,rgba(166,117,255,.08) 0%,transparent 55%),radial-gradient(ellipse 40% 40% at 10% 70%,rgba(91,92,255,.06) 0%,transparent 50%);pointer-events:none}
+.hero-content{position:relative;z-index:2;max-width:900px}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;background:rgba(91,92,255,.12);border:1px solid rgba(91,92,255,.35);padding:.45rem 1.1rem;border-radius:100px;font-size:.78rem;font-weight:600;letter-spacing:.08em;color:#A675FF;margin-bottom:2.25rem;animation:fadeDown .8s ease both}
+.hero-eyebrow .pulse{width:7px;height:7px;border-radius:50%;background:var(--v);animation:pulseRing 2s ease-in-out infinite;box-shadow:0 0 0 0 rgba(166,117,255,.4)}
+@keyframes pulseRing{0%,100%{box-shadow:0 0 0 0 rgba(166,117,255,.4)}50%{box-shadow:0 0 0 6px rgba(166,117,255,0)}}
+.hero h1{font-size:clamp(3rem,7.5vw,6rem);font-weight:900;line-height:1.03;letter-spacing:-.04em;margin-bottom:1.5rem;animation:fadeUp .9s .15s ease both}
+.hero h1 .line2{display:block;margin-top:.15em}
+.gradient-text{background:linear-gradient(135deg,#818CF8 0%,#A855F7 40%,#C084FC 70%,#818CF8 100%);background-size:200% 200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:shimmer 4s linear infinite}
+@keyframes shimmer{0%{background-position:0% 50%}100%{background-position:200% 50%}}
+.hero-sub{font-size:1.1rem;color:var(--muted);max-width:580px;margin:0 auto 2.75rem;line-height:1.75;animation:fadeUp .9s .3s ease both}
+.hero-actions{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-bottom:5rem;animation:fadeUp .9s .45s ease both}
+.btn-hero{background:linear-gradient(135deg,var(--p),var(--v));color:#fff;border:none;padding:1rem 2.25rem;border-radius:12px;font-size:1rem;font-weight:700;cursor:pointer;text-decoration:none;box-shadow:0 8px 40px rgba(91,92,255,.45),0 0 0 1px rgba(91,92,255,.3);transition:all .25s;font-family:'Inter',sans-serif}
+.btn-hero:hover{transform:translateY(-2px);box-shadow:0 12px 50px rgba(91,92,255,.6),0 0 0 1px rgba(91,92,255,.4)}
+.btn-hero-ghost{background:rgba(255,255,255,.05);color:#fff;border:1px solid rgba(255,255,255,.15);padding:1rem 2.25rem;border-radius:12px;font-size:1rem;font-weight:600;cursor:pointer;text-decoration:none;backdrop-filter:blur(10px);transition:all .25s;font-family:'Inter',sans-serif}
+.btn-hero-ghost:hover{background:rgba(255,255,255,.09);border-color:rgba(91,92,255,.4)}
+.hero-trust{display:flex;align-items:center;justify-content:center;gap:2.5rem;flex-wrap:wrap;animation:fadeUp .9s .6s ease both}
+.trust-item{display:flex;align-items:center;gap:.6rem}
+.trust-avatars{display:flex}
+.trust-avatars span{width:30px;height:30px;border-radius:50%;border:2px solid var(--dark);background:linear-gradient(135deg,var(--p),var(--v));display:flex;align-items:center;justify-content:center;font-size:.62rem;font-weight:700;margin-left:-8px}
+.trust-avatars span:first-child{margin-left:0}
+.trust-text{font-size:.82rem;color:var(--muted)}
+.trust-text strong{color:#fff;font-weight:600}
+.trust-sep{width:1px;height:24px;background:rgba(255,255,255,.12)}
+.stars-sm{color:#A855F7;font-size:.9rem;letter-spacing:1px}
+.marquee-section{position:relative;z-index:1;padding:2.5rem 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);background:rgba(13,13,28,.6);overflow:hidden}
+.marquee-label{text-align:center;font-size:.7rem;letter-spacing:.15em;font-weight:600;color:var(--muted2);text-transform:uppercase;margin-bottom:1.5rem}
+.marquee-track{display:flex;gap:3rem;align-items:center;animation:marquee 25s linear infinite;width:max-content}
+.marquee-section:hover .marquee-track{animation-play-state:paused}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.marquee-item{display:flex;align-items:center;gap:.6rem;font-size:.9rem;font-weight:600;letter-spacing:.05em;color:rgba(255,255,255,.22);white-space:nowrap;transition:color .3s}
+.marquee-item:hover{color:rgba(255,255,255,.5)}
+.marquee-dot{width:6px;height:6px;border-radius:50%;background:var(--border)}
+.s-wrap{position:relative;z-index:1}
+.s-inner{max-width:1180px;margin:0 auto;padding:0 5%}
+.s-label{font-size:.72rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--p);margin-bottom:.75rem;display:block}
+.s-title{font-size:clamp(1.9rem,4vw,3rem);font-weight:800;letter-spacing:-.03em;line-height:1.1}
+.services-s{padding:8rem 0}
+.services-top{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:4rem;gap:2rem;flex-wrap:wrap}
+.services-desc{color:var(--muted);font-size:.97rem;max-width:360px;line-height:1.7;align-self:flex-end}
+.services-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1.25rem}
+.svc-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:2.25rem;cursor:default;position:relative;overflow:hidden;transition:transform .35s cubic-bezier(.22,.68,0,1.2),box-shadow .35s,border-color .3s}
+.svc-card::before{content:'';position:absolute;inset:0;border-radius:20px;background:radial-gradient(ellipse 60% 60% at var(--mx,50%) var(--my,50%),rgba(91,92,255,.1) 0%,transparent 70%);opacity:0;transition:opacity .4s;pointer-events:none}
+.svc-card:hover{transform:translateY(-5px);box-shadow:0 20px 60px rgba(91,92,255,.18);border-color:rgba(91,92,255,.4)}
+.svc-card:hover::before{opacity:1}
+.svc-card.featured{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:2.5rem;align-items:center;background:linear-gradient(135deg,rgba(91,92,255,.12) 0%,rgba(166,117,255,.08) 100%);border-color:rgba(91,92,255,.3)}
+.svc-icon-wrap{width:52px;height:52px;border-radius:14px;background:rgba(91,92,255,.15);border:1px solid rgba(91,92,255,.25);display:flex;align-items:center;justify-content:center;margin-bottom:1.5rem;transition:background .3s,transform .3s}
+.svc-card:hover .svc-icon-wrap{background:rgba(91,92,255,.25);transform:scale(1.08)}
+.svc-icon-wrap svg{width:26px;height:26px}
+.svc-card h3{font-size:1.15rem;font-weight:700;margin-bottom:.6rem}
+.svc-card p{font-size:.9rem;color:var(--muted);line-height:1.7}
+.svc-tags{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.25rem}
+.tag{font-size:.72rem;font-weight:600;letter-spacing:.04em;padding:.3rem .7rem;border-radius:100px;background:rgba(91,92,255,.12);border:1px solid rgba(91,92,255,.22);color:#A675FF}
+.svc-visual{position:relative;height:180px;background:rgba(8,8,15,.6);border-radius:14px;overflow:hidden;border:1px solid var(--border)}
+.svc-visual-inner{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:8px;padding:1.25rem}
+.ai-bubble{background:rgba(91,92,255,.15);border:1px solid rgba(91,92,255,.25);border-radius:12px;padding:.7rem 1rem;font-size:.78rem;color:rgba(255,255,255,.7);max-width:160px;line-height:1.5;animation:floatBubble 3s ease-in-out infinite}
+.ai-bubble.right{background:rgba(166,117,255,.12);border-color:rgba(166,117,255,.25);animation-delay:1.5s;align-self:flex-end}
+@keyframes floatBubble{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.ai-dot{width:8px;height:8px;border-radius:50%;background:var(--v);animation:blink 1.5s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.metrics-s{padding:5rem 0;background:linear-gradient(180deg,transparent 0%,rgba(91,92,255,.04) 50%,transparent 100%);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.metrics-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0}
+.metric-item{text-align:center;padding:2rem 1.5rem;border-right:1px solid var(--border)}
+.metric-item:last-child{border-right:none}
+.metric-num{font-size:clamp(2.2rem,4vw,3.5rem);font-weight:900;letter-spacing:-.04em;line-height:1;background:linear-gradient(135deg,#fff 30%,#A675FF 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;display:block;margin-bottom:.4rem}
+.metric-label{font-size:.82rem;color:var(--muted);font-weight:500}
+.metric-sub{font-size:.72rem;color:var(--muted2);margin-top:.25rem}
+/* PROCESS */
+.process-s{padding:8rem 0}
+.process-layout{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:start;margin-top:4rem}
+.process-steps{display:flex;flex-direction:column;gap:0}
+.process-step{display:flex;gap:1.25rem;align-items:flex-start;padding:1.75rem 0;border-bottom:1px solid rgba(255,255,255,.06);cursor:pointer;transition:all .25s;position:relative}
+.process-step:last-child{border-bottom:none}
+.process-step.active .step-content h4{color:#fff}
+.process-step.active .step-num-wrap{background:var(--p);border-color:var(--p)}
+.process-step.active .step-num-wrap span{color:#fff}
+.step-num-wrap{min-width:44px;height:44px;border-radius:12px;background:rgba(91,92,255,.08);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;transition:all .3s;flex-shrink:0}
+.step-num-wrap span{font-size:.82rem;font-weight:700;color:var(--p);transition:color .3s}
+.step-content h4{font-size:1rem;font-weight:700;margin-bottom:.35rem;color:rgba(255,255,255,.7);transition:color .3s}
+.step-content p{font-size:.88rem;color:var(--muted);line-height:1.65}
+.step-bar{position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--p);transform:scaleY(0);transform-origin:top;transition:transform .4s ease;border-radius:1px}
+.process-step.active .step-bar{transform:scaleY(1)}
+.process-visual-panel{position:sticky;top:100px;background:var(--card);border:1px solid var(--border);border-radius:24px;overflow:hidden;aspect-ratio:4/3}
+.pv-screen{position:absolute;inset:0;display:none;flex-direction:column;padding:1.75rem;gap:1rem}
+.pv-screen.active{display:flex}
+.pv-topbar{display:flex;align-items:center;gap:8px;padding-bottom:1rem;border-bottom:1px solid rgba(255,255,255,.06)}
+.pv-dot{width:8px;height:8px;border-radius:50%}
+.pv-title{font-size:.78rem;font-weight:600;color:rgba(255,255,255,.5);margin-left:.5rem}
+.pv-rows{display:flex;flex-direction:column;gap:.75rem;flex:1}
+.pv-row{display:flex;align-items:center;gap:.75rem;background:rgba(255,255,255,.04);border-radius:10px;padding:.85rem 1rem;border:1px solid rgba(255,255,255,.05)}
+.pv-row-icon{width:32px;height:32px;border-radius:8px;background:rgba(91,92,255,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.pv-row-label{font-size:.82rem;font-weight:500;color:rgba(255,255,255,.7)}
+.pv-row-val{margin-left:auto;font-size:.78rem;font-weight:700;color:var(--v);background:rgba(166,117,255,.1);padding:.2rem .6rem;border-radius:6px}
+.pv-chart{height:80px;display:flex;align-items:flex-end;gap:5px;padding-top:.5rem}
+.bar-col{flex:1;border-radius:4px 4px 0 0;background:linear-gradient(180deg,var(--v) 0%,rgba(91,92,255,.3) 100%)}
+/* FEATURES */
+.features-s{padding:8rem 0;background:var(--dark2)}
+.features-header{text-align:center;margin-bottom:4rem}
+.features-header .section-desc{max-width:520px;margin:.75rem auto 0;color:var(--muted);font-size:.97rem;line-height:1.7}
+.bento{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem}
+.bento-card{background:var(--card2);border:1px solid var(--border);border-radius:20px;padding:2rem;overflow:hidden;position:relative;transition:border-color .3s,transform .3s}
+.bento-card:hover{border-color:rgba(91,92,255,.4);transform:translateY(-3px)}
+.bento-card.span2{grid-column:span 2}
+.bento-card h4{font-size:1rem;font-weight:700;margin-bottom:.5rem}
+.bento-card p{font-size:.87rem;color:var(--muted);line-height:1.65}
+.bento-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:1.25rem;font-size:1.25rem;background:rgba(91,92,255,.12);border:1px solid rgba(91,92,255,.2)}
+.mini-chart{display:flex;align-items:flex-end;gap:4px;height:56px;margin-top:1.25rem}
+.mc-bar{flex:1;border-radius:3px 3px 0 0;background:rgba(91,92,255,.2);position:relative;overflow:hidden}
+.mc-bar::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,var(--v) 0%,var(--p) 100%);transform:scaleY(var(--h,.3));transform-origin:bottom;transition:transform 1.2s cubic-bezier(.22,.68,0,1)}
+.mini-toggle{display:flex;flex-direction:column;gap:.6rem;margin-top:1.25rem}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:.7rem .9rem;background:rgba(255,255,255,.04);border-radius:10px;border:1px solid rgba(255,255,255,.05)}
+.toggle-label{font-size:.8rem;font-weight:500;color:rgba(255,255,255,.6)}
+.toggle-pill{width:34px;height:18px;border-radius:9px;position:relative;transition:background .3s}
+.toggle-pill.on{background:var(--p)}.toggle-pill.off{background:rgba(255,255,255,.15)}
+.toggle-thumb{position:absolute;top:2px;width:14px;height:14px;border-radius:50%;background:#fff;transition:left .25s;box-shadow:0 1px 4px rgba(0,0,0,.3)}
+.toggle-pill.on .toggle-thumb{left:18px}.toggle-pill.off .toggle-thumb{left:2px}
+.integration-grid{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1.25rem}
+.int-chip{display:flex;align-items:center;gap:.5rem;padding:.5rem .85rem;border-radius:10px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);font-size:.78rem;font-weight:600;color:rgba(255,255,255,.6);transition:all .25s}
+.int-chip:hover{background:rgba(91,92,255,.12);border-color:rgba(91,92,255,.3);color:#fff}
+.int-chip span{font-size:.95rem}
+.flow-nodes{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin-top:1.25rem}
+.fnode{padding:.5rem .9rem;border-radius:10px;font-size:.78rem;font-weight:600;border:1px solid}
+.fnode.purple{background:rgba(91,92,255,.12);border-color:rgba(91,92,255,.25);color:#A675FF}
+.fnode.violet{background:rgba(166,117,255,.1);border-color:rgba(166,117,255,.2);color:#C084FC}
+.fnode.white{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.1);color:rgba(255,255,255,.6)}
+.farrow{color:rgba(255,255,255,.2);font-size:.9rem}
+/* HOW */
+.how-s{padding:8rem 0}
+.how-header{text-align:center;margin-bottom:5rem}
+.how-header p{color:var(--muted);max-width:520px;margin:.75rem auto 0;font-size:.97rem;line-height:1.7}
+.how-flow{display:grid;grid-template-columns:repeat(6,1fr);gap:0;position:relative}
+.how-flow::before{content:'';position:absolute;top:38px;left:8%;right:8%;height:1px;background:linear-gradient(90deg,transparent,var(--p),var(--v),var(--pk),var(--v),var(--p),transparent);opacity:.3}
+.how-step{display:flex;flex-direction:column;align-items:center;text-align:center;padding:0 .75rem;position:relative;z-index:1}
+.how-num{width:76px;height:76px;border-radius:50%;background:var(--card);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;margin-bottom:1.25rem;font-size:1.5rem;position:relative;transition:border-color .3s,box-shadow .3s}
+.how-step:hover .how-num{border-color:rgba(91,92,255,.5);box-shadow:0 0 30px rgba(91,92,255,.2)}
+.how-step h4{font-size:.9rem;font-weight:700;margin-bottom:.4rem}
+.how-step p{font-size:.78rem;color:var(--muted);line-height:1.55}
+.how-badge{position:absolute;top:-6px;right:-6px;background:linear-gradient(135deg,var(--p),var(--v));border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:800;border:2px solid var(--dark)}
+/* ECO */
+.eco-s{padding:8rem 0;background:var(--dark2)}
+.eco-header{text-align:center;margin-bottom:4rem}
+.eco-header p{color:var(--muted);max-width:520px;margin:.75rem auto 0;font-size:.97rem;line-height:1.7}
+.eco-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:1rem;align-items:center}
+.eco-hub{grid-column:3;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(135deg,rgba(91,92,255,.18),rgba(166,117,255,.12));border:1px solid rgba(91,92,255,.4);border-radius:24px;padding:2rem;text-align:center;min-height:160px;box-shadow:0 0 60px rgba(91,92,255,.15)}
+.eco-hub .eco-icon{font-size:2rem;margin-bottom:.75rem}
+.eco-hub h4{font-weight:800;font-size:1.1rem}
+.eco-hub p{font-size:.78rem;color:var(--muted);margin-top:.25rem}
+.eco-node{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.25rem;text-align:center;transition:all .3s}
+.eco-node:hover{border-color:rgba(91,92,255,.4);transform:translateY(-3px);box-shadow:0 12px 30px rgba(91,92,255,.12)}
+.eco-node .eco-icon{font-size:1.4rem;margin-bottom:.5rem;display:block}
+.eco-node h5{font-size:.82rem;font-weight:700;margin-bottom:.2rem}
+.eco-node p{font-size:.72rem;color:var(--muted);line-height:1.4}
+.eco-connector{display:flex;align-items:center;justify-content:center;color:rgba(91,92,255,.4);font-size:1.1rem}
+/* PLANS */
+.plans-s{padding:8rem 0}
+.plans-header{text-align:center;margin-bottom:4rem}
+.plans-header p{color:var(--muted);max-width:520px;margin:.75rem auto 0;font-size:.97rem;line-height:1.7}
+.plans-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;align-items:start}
+.plan-card{background:var(--card);border:1px solid var(--border);border-radius:24px;padding:2.25rem;position:relative;transition:transform .3s,box-shadow .3s;display:flex;flex-direction:column;gap:1.5rem}
+.plan-card:hover{transform:translateY(-6px);box-shadow:0 24px 60px rgba(91,92,255,.15)}
+.plan-card.featured{border-color:rgba(91,92,255,.5);background:linear-gradient(180deg,rgba(91,92,255,.1) 0%,var(--card) 40%);box-shadow:0 0 0 1px rgba(91,92,255,.25),0 20px 60px rgba(91,92,255,.2)}
+.plan-badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,var(--p),var(--v));color:#fff;font-size:.68rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:.35rem 1rem;border-radius:100px;white-space:nowrap;box-shadow:0 4px 16px rgba(91,92,255,.4)}
+.plan-name{font-size:.72rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--p)}
+.plan-title{font-size:1.5rem;font-weight:800;margin-top:.25rem}
+.plan-desc{font-size:.87rem;color:var(--muted);line-height:1.6}
+.plan-divider{height:1px;background:var(--border)}
+.plan-features{list-style:none;display:flex;flex-direction:column;gap:.7rem}
+.plan-features li{display:flex;align-items:flex-start;gap:.65rem;font-size:.87rem;color:rgba(255,255,255,.8)}
+.plan-features li::before{content:'✓';color:var(--v);font-weight:700;flex-shrink:0;margin-top:.05rem}
+.plan-cta{margin-top:auto;width:100%;padding:1rem;border-radius:12px;font-size:.95rem;font-weight:700;cursor:pointer;text-align:center;text-decoration:none;display:block;font-family:'Inter',sans-serif;transition:all .25s;border:none}
+.plan-cta.ghost{background:rgba(91,92,255,.1);color:#A675FF;border:1px solid rgba(91,92,255,.3)}
+.plan-cta.ghost:hover{background:rgba(91,92,255,.2)}
+.plan-cta.primary{background:linear-gradient(135deg,var(--p),var(--v));color:#fff;box-shadow:0 4px 24px rgba(91,92,255,.4)}
+.plan-cta.primary:hover{transform:translateY(-1px);box-shadow:0 8px 32px rgba(91,92,255,.55)}
+.plan-cta.outline{background:transparent;color:var(--muted);border:1px solid var(--border)}
+.plan-cta.outline:hover{color:#fff;border-color:rgba(91,92,255,.4)}
+/* TESTIMONIALS */
+.test-s{padding:8rem 0}
+.test-header{text-align:center;margin-bottom:4rem}
+.test-header p{max-width:480px;margin:.75rem auto 0;color:var(--muted);font-size:.97rem}
+.test-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem}
+.tc{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:2rem;display:flex;flex-direction:column;gap:1.25rem;transition:border-color .3s,transform .3s}
+.tc:hover{border-color:rgba(91,92,255,.35);transform:translateY(-4px)}
+.tc.featured{background:linear-gradient(135deg,rgba(91,92,255,.12),rgba(166,117,255,.08));border-color:rgba(91,92,255,.3)}
+.tc-stars{display:flex;gap:3px}
+.tc-stars span{color:var(--v);font-size:.9rem}
+.tc-quote{font-size:.93rem;color:rgba(255,255,255,.78);line-height:1.72;flex:1}
+.tc-author{display:flex;align-items:center;gap:.85rem}
+.tc-avatar{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--p),var(--v));display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:800;flex-shrink:0}
+.tc-name{font-size:.88rem;font-weight:700;display:block}
+.tc-role{font-size:.78rem;color:var(--muted)}
+.tc-metric{display:flex;align-items:center;gap:.5rem;padding:.6rem .9rem;border-radius:10px;background:rgba(91,92,255,.1);border:1px solid rgba(91,92,255,.2);font-size:.8rem;font-weight:700;color:var(--v);align-self:flex-start}
+/* QUIZ MODAL */
+.modal-overlay{position:fixed;inset:0;z-index:900;background:rgba(0,0,0,.75);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;padding:1.5rem}
+.modal-overlay.open{display:flex}
+.modal-box{background:var(--card);border:1px solid rgba(91,92,255,.3);border-radius:28px;padding:3rem;max-width:560px;width:100%;position:relative;max-height:90vh;overflow-y:auto}
+.modal-close{position:absolute;top:1.25rem;right:1.25rem;width:36px;height:36px;border-radius:10px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:var(--muted);font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.modal-close:hover{background:rgba(255,255,255,.1);color:#fff}
+.quiz-progress{display:flex;gap:6px;margin-bottom:2rem}
+.quiz-dot{flex:1;height:3px;border-radius:2px;background:rgba(255,255,255,.1);transition:background .3s}
+.quiz-dot.done{background:var(--v)}.quiz-dot.active{background:var(--p)}
+.quiz-step{display:none}
+.quiz-step.active{display:block}
+.quiz-q{font-size:1.2rem;font-weight:700;margin-bottom:.5rem}
+.quiz-sub{font-size:.88rem;color:var(--muted);margin-bottom:1.75rem}
+.quiz-options{display:flex;flex-direction:column;gap:.75rem}
+.quiz-opt{padding:1rem 1.25rem;border-radius:14px;border:1px solid var(--border);background:rgba(255,255,255,.03);cursor:pointer;font-size:.9rem;color:rgba(255,255,255,.8);transition:all .2s;text-align:left;font-family:'Inter',sans-serif;width:100%}
+.quiz-opt:hover{border-color:rgba(91,92,255,.5);background:rgba(91,92,255,.08);color:#fff}
+.quiz-opt.selected{border-color:var(--p);background:rgba(91,92,255,.15);color:#fff}
+.quiz-nav{display:flex;justify-content:space-between;align-items:center;margin-top:2rem}
+.quiz-back{background:none;border:none;color:var(--muted);font-size:.875rem;cursor:pointer;font-family:'Inter',sans-serif;padding:.5rem}
+.quiz-back:hover{color:#fff}
+.btn-quiz-next{background:linear-gradient(135deg,var(--p),var(--v));color:#fff;border:none;padding:.85rem 2rem;border-radius:12px;font-size:.95rem;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:all .25s}
+.btn-quiz-next:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(91,92,255,.4)}
+.quiz-result{text-align:center;padding-top:1rem}
+.quiz-result .plan-badge-lg{display:inline-block;background:linear-gradient(135deg,var(--p),var(--v));color:#fff;padding:.5rem 1.5rem;border-radius:100px;font-weight:800;font-size:.9rem;letter-spacing:.06em;margin-bottom:1.25rem}
+.quiz-result h3{font-size:1.5rem;font-weight:800;margin-bottom:.75rem}
+.quiz-result p{color:var(--muted);margin-bottom:2rem;font-size:.93rem;line-height:1.65}
+.quiz-contact-form{display:flex;flex-direction:column;gap:.75rem}
+.quiz-input{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:#fff;padding:.875rem 1.1rem;border-radius:12px;font-size:.93rem;font-family:'Inter',sans-serif;outline:none;transition:border-color .2s}
+.quiz-input::placeholder{color:rgba(255,255,255,.28)}
+.quiz-input:focus{border-color:rgba(91,92,255,.6);box-shadow:0 0 0 3px rgba(91,92,255,.12)}
+.quiz-success{text-align:center;padding:2rem 0}
+.quiz-success .check{font-size:3rem;margin-bottom:1rem}
+.quiz-success h3{font-size:1.25rem;font-weight:800;margin-bottom:.5rem}
+.quiz-success p{color:var(--muted);font-size:.9rem}
+/* CTA */
+.cta-s{padding:9rem 5%;text-align:center;position:relative;overflow:hidden;z-index:1}
+.cta-glow{position:absolute;inset:0;z-index:0;background:radial-gradient(ellipse 70% 70% at 50% 50%,rgba(91,92,255,.12) 0%,transparent 70%);pointer-events:none}
+.cta-border-box{position:relative;z-index:1;max-width:740px;margin:0 auto;background:var(--card);border:1px solid var(--border);border-radius:28px;padding:4rem 3rem;overflow:hidden}
+.cta-border-box::before{content:'';position:absolute;inset:0;border-radius:28px;background:linear-gradient(135deg,rgba(91,92,255,.06),rgba(166,117,255,.04));pointer-events:none}
+.cta-border-box::after{content:'';position:absolute;top:-1px;left:20%;right:20%;height:1px;background:linear-gradient(90deg,transparent,var(--p),var(--v),transparent)}
+.cta-border-box .s-label{justify-content:center;display:block}
+.cta-border-box h2{font-size:clamp(2rem,5vw,3.25rem);font-weight:900;letter-spacing:-.04em;line-height:1.1;margin-bottom:1.1rem}
+.cta-border-box p{color:var(--muted);max-width:460px;margin:0 auto 2.5rem;font-size:.97rem;line-height:1.7}
+.cta-form{display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;max-width:480px;margin:0 auto 1.5rem}
+.cta-input{flex:1;min-width:210px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:#fff;padding:.875rem 1.2rem;border-radius:12px;font-size:.95rem;font-family:'Inter',sans-serif;outline:none;transition:border-color .2s}
+.cta-input::placeholder{color:rgba(255,255,255,.28)}
+.cta-input:focus{border-color:rgba(91,92,255,.6);box-shadow:0 0 0 3px rgba(91,92,255,.12)}
+.btn-cta{background:linear-gradient(135deg,var(--p),var(--v));color:#fff;border:none;padding:.875rem 1.75rem;border-radius:12px;font-size:.95rem;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;white-space:nowrap;box-shadow:0 4px 24px rgba(91,92,255,.4);transition:all .25s}
+.btn-cta:hover{transform:translateY(-1px);box-shadow:0 8px 32px rgba(91,92,255,.55)}
+.cta-micro{font-size:.75rem;color:var(--muted2)}
+.cta-micro span{color:var(--muted)}
+/* FOOTER */
+footer{background:#050509;border-top:1px solid var(--border);padding:3.5rem 5% 2.5rem;position:relative;z-index:1}
+.footer-top{display:grid;grid-template-columns:1.4fr repeat(3,1fr);gap:3rem;max-width:1180px;margin:0 auto;padding-bottom:2.5rem;border-bottom:1px solid rgba(255,255,255,.06)}
+.footer-brand p{font-size:.88rem;color:var(--muted);line-height:1.7;margin-top:.85rem;max-width:280px}
+.footer-col h5{font-size:.8rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:1rem}
+.footer-col ul{list-style:none;display:flex;flex-direction:column;gap:.6rem}
+.footer-col a{color:var(--muted);text-decoration:none;font-size:.875rem;transition:color .2s}
+.footer-col a:hover{color:#fff}
+.footer-bottom{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;max-width:1180px;margin:.1rem auto 0;padding-top:1.75rem}
+.footer-copy{font-size:.78rem;color:rgba(255,255,255,.22)}
+.footer-socials{display:flex;gap:.75rem}
+.social-btn{width:34px;height:34px;border-radius:9px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.4);font-size:.85rem;text-decoration:none;transition:all .2s;cursor:pointer}
+.social-btn:hover{background:rgba(91,92,255,.2);border-color:rgba(91,92,255,.35);color:var(--v)}
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .7s ease,transform .7s ease}
+.reveal.visible{opacity:1;transform:none}
+.reveal-delay-1{transition-delay:.1s}.reveal-delay-2{transition-delay:.2s}.reveal-delay-3{transition-delay:.3s}
+@keyframes fadeDown{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:none}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+@media(max-width:1100px){.how-flow{grid-template-columns:repeat(3,1fr);gap:2rem}.how-flow::before{display:none}.eco-grid{grid-template-columns:1fr 1fr auto 1fr 1fr}}
+@media(max-width:900px){.nav-center,.btn-nav-ghost{display:none}.services-grid,.bento,.test-grid,.plans-grid{grid-template-columns:1fr}.svc-card.featured{grid-template-columns:1fr}.bento-card.span2{grid-column:span 1}.process-layout{grid-template-columns:1fr}.process-visual-panel{display:none}.metrics-grid{grid-template-columns:repeat(2,1fr)}.metric-item{border-bottom:1px solid var(--border)}.metric-item:nth-child(odd){border-right:1px solid var(--border)}.metric-item:nth-child(even){border-right:none}.footer-top{grid-template-columns:1fr 1fr}.services-top{flex-direction:column;align-items:flex-start}.eco-grid{grid-template-columns:1fr 1fr}.eco-hub{grid-column:1/3}.eco-connector{display:none}}
+@media(max-width:600px){.hero h1{font-size:2.6rem}.hero-actions{flex-direction:column;align-items:stretch}.btn-hero,.btn-hero-ghost{text-align:center}.metrics-grid{grid-template-columns:1fr}.metric-item{border-right:none}.cta-border-box{padding:2.5rem 1.5rem}.footer-top{grid-template-columns:1fr}.how-flow{grid-template-columns:1fr 1fr}.modal-box{padding:2rem 1.5rem}}
+</style>
+</head>
+<body>
+<canvas id="canvas-bg"></canvas>
+
+<!-- QUIZ MODAL -->
+<div class="modal-overlay" id="quizModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeQuiz()">✕</button>
+    <div class="quiz-progress" id="quizProgress"></div>
+    <div class="quiz-step active" data-step="1">
+      <div class="quiz-q">Qual é o maior desafio da sua empresa hoje?</div>
+      <div class="quiz-sub">Vamos encontrar a solução certa para você.</div>
+      <div class="quiz-options">
+        <button class="quiz-opt" data-val="1" onclick="selectOpt(this,1)">🚀 Preciso atrair mais clientes e leads qualificados</button>
+        <button class="quiz-opt" data-val="2" onclick="selectOpt(this,1)">⚙️ Processos manuais que consomem tempo e geram erros</button>
+        <button class="quiz-opt" data-val="3" onclick="selectOpt(this,1)">📊 Falta de visibilidade sobre o desempenho do negócio</button>
+        <button class="quiz-opt" data-val="4" onclick="selectOpt(this,1)">🤝 Atendimento lento que perde clientes para a concorrência</button>
+      </div>
+      <div class="quiz-nav"><span></span><button class="btn-quiz-next" onclick="nextStep()">Próximo →</button></div>
+    </div>
+    <div class="quiz-step" data-step="2">
+      <div class="quiz-q">Qual é o tamanho da sua empresa?</div>
+      <div class="quiz-sub">Isso nos ajuda a calibrar o investimento certo.</div>
+      <div class="quiz-options">
+        <button class="quiz-opt" data-val="1" onclick="selectOpt(this,2)">👤 Autônomo ou MEI</button>
+        <button class="quiz-opt" data-val="2" onclick="selectOpt(this,2)">🏢 Pequena empresa (2–20 funcionários)</button>
+        <button class="quiz-opt" data-val="3" onclick="selectOpt(this,2)">🏗️ Média empresa (21–100 funcionários)</button>
+        <button class="quiz-opt" data-val="4" onclick="selectOpt(this,2)">🏭 Empresa consolidada (100+ funcionários)</button>
+      </div>
+      <div class="quiz-nav"><button class="quiz-back" onclick="prevStep()">← Voltar</button><button class="btn-quiz-next" onclick="nextStep()">Próximo →</button></div>
+    </div>
+    <div class="quiz-step" data-step="3">
+      <div class="quiz-q">O que você já tem hoje em tecnologia?</div>
+      <div class="quiz-sub">Não começamos do zero sem necessidade.</div>
+      <div class="quiz-options">
+        <button class="quiz-opt" data-val="1" onclick="selectOpt(this,3)">🌱 Quase nada — estou começando agora</button>
+        <button class="quiz-opt" data-val="2" onclick="selectOpt(this,3)">📧 Site básico e redes sociais</button>
+        <button class="quiz-opt" data-val="3" onclick="selectOpt(this,3)">💼 CRM ou sistemas próprios parcialmente integrados</button>
+        <button class="quiz-opt" data-val="4" onclick="selectOpt(this,3)">🔧 Stack completo mas com problemas de resultado ou integração</button>
+      </div>
+      <div class="quiz-nav"><button class="quiz-back" onclick="prevStep()">← Voltar</button><button class="btn-quiz-next" onclick="nextStep()">Ver meu plano →</button></div>
+    </div>
+    <div class="quiz-step" data-step="result">
+      <div class="quiz-result">
+        <div class="plan-badge-lg" id="quizResultBadge">Prisma Growth</div>
+        <h3 id="quizResultTitle">Você está pronto para crescer com tecnologia</h3>
+        <p id="quizResultDesc">Com base nas suas respostas, o Prisma Growth é ideal para você.</p>
+        <div class="quiz-contact-form">
+          <input class="quiz-input" id="qName" type="text" placeholder="Seu nome">
+          <input class="quiz-input" id="qEmail" type="email" placeholder="E-mail corporativo">
+          <input class="quiz-input" id="qPhone" type="tel" placeholder="WhatsApp (opcional)">
+          <button class="btn-quiz-next" style="width:100%;padding:1rem" onclick="submitQuiz()"> Entrar </button>
+        </div>
+        <p style="font-size:.75rem;color:var(--muted2);margin-top:1rem">Resposta em menos de 2h · Sem compromisso</p>
+      </div>
+    </div>
+    <div class="quiz-step" data-step="success">
+      <div class="quiz-success">
+        <div class="check">✅</div>
+        <h3>Tudo certo!</h3>
+        <p>Um especialista da Prisma vai entrar em contato em menos de 2 horas com um diagnóstico personalizado para o seu negócio.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav id="nav">
+  <a class="nav-logo" href="#">
+    <svg class="logo-mark" viewBox="0 0 34 34" fill="none">
+      <defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#5B5CFF"/><stop offset="100%" stop-color="#A675FF"/></linearGradient></defs>
+      <path d="M17 2C8.716 2 2 8.716 2 17c0 4.07 1.6 7.76 4.2 10.46C8.2 29.8 11.1 31.4 14 32.2c.6.16 1.2-.2 1.4-.8.16-.6-.2-1.2-.8-1.4-2.5-.7-5-2.06-6.8-3.9C5.6 23.9 4.2 20.62 4.2 17 4.2 9.94 9.94 4.2 17 4.2S29.8 9.94 29.8 17c0 3.62-1.4 6.9-3.6 9.1-1.8 1.84-4.3 3.2-6.8 3.9-.6.18-.96.8-.8 1.4.18.6.8.96 1.4.8 2.9-.8 5.8-2.4 7.8-4.74C30.4 24.76 32 21.07 32 17 32 8.716 25.284 2 17 2z" fill="url(#lg)" opacity=".5"/>
+      <circle cx="17" cy="17" r="5" fill="url(#lg)"/><circle cx="17" cy="17" r="2.5" fill="#fff" opacity=".9"/>
+    </svg>
+    <span class="logo-text">PRISMA</span>
+  </a>
+  <ul class="nav-center">
+    <li><a href="#servicos">Serviços</a></li>
+    <li><a href="#como-funciona">Como Funciona</a></li>
+    <li><a href="#planos">Planos</a></li>
+    <li><a href="#depoimentos">Cases</a></li>
+  </ul>
+  <div class="nav-right">
+    <a href="login.html" class="btn-nav-ghost">Entrar</a>
+    <a href="#" class="btn-nav-primary" onclick="openQuiz(event)"><span>Diagnóstico grátis →</span></a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-noise"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow"><div class="pulse"></div>Parceiro Tecnológico · PMEs que querem crescer</div>
+    <h1>Um time completo de tecnologia<span class="line2">por <span class="gradient-text">menos que um salário</span></span></h1>
+    <p class="hero-sub">Site, CRM, IA, automações, marketing e suporte — tudo integrado, tudo evoluindo junto com o seu negócio. Um único parceiro para tudo que é tecnologia na sua empresa.</p>
+    <div class="hero-actions">
+      <a href="#" class="btn-hero" onclick="openQuiz(event)">Descobrir meu plano ideal →</a>
+      <a href="#como-funciona" class="btn-hero-ghost">Como funciona ↓</a>
+    </div>
+    <div class="hero-trust">
+      <div class="trust-item">
+        <div class="trust-avatars"><span>RS</span><span>MC</span><span>FO</span><span>+</span></div>
+        <div class="trust-text"><strong>150+ empresas</strong> confiam na PRISMA</div>
+      </div>
+      <div class="trust-sep"></div>
+      <div class="trust-item"><div class="stars-sm">★★★★★</div><div class="trust-text"><strong>4.9/5</strong> de satisfação</div></div>
+      <div class="trust-sep"></div>
+      <div class="trust-item"><div class="trust-text">Resultado médio em <strong>12 dias</strong></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-section">
+  <p class="marquee-label">Tecnologias que dominamos</p>
+  <div class="marquee-track">
+    <div class="marquee-item"><span>Node.js</span></div><div class="marquee-dot"></div>
+    <div class="marquee-item"><span>React & Next.js</span></div><div class="marquee-dot"></div>
+    <div class="marquee-item"><span>OpenAI / Claude AI</span></div><div class="marquee-dot"></div>
+    <div class="marquee-item"><span>WhatsApp API</span></div><div class="marquee-dot"></div>
+    <div class="marquee-item"><span>Meta Ads</span></div><div class="marquee-dot"></div>
+    <div class="marquee-item"><span>PostgreSQL</span></div><div class="marquee-dot"></div>
+    <div class="marquee-item"><span>AWS & Cloud</span></div><div class="marquee-dot"></div>
+    <div class="marquee-item"><span>CRM & ERP</span></div><div class="marquee-dot"></div>
+    <div class="marquee-item"><span>n8n Automation</span></div><div class="marquee-dot"></div>
+    <div class="marquee-item"><span>Google Ads & SEO</span></div><div class="marquee-dot"></div>
+    <div class="marquee-item"><span>Node.js</span></div><div class="marquee-dot"></div>
+    <div class="marquee-item"><span>React & Next.js</span></div><div class="marquee-dot"></div>
+    <div class="marquee-item"><span>OpenAI / Claude AI</span></div><div class="marquee-dot"></div>
+    <div class="marquee-item"><span>WhatsApp API</span></div><div class="marquee-dot"></div>
+    <div class="marquee-item"><span>Meta Ads</span></div><div class="marquee-dot"></div>
+    <div class="marquee-item"><span>PostgreSQL</span></div><div class="marquee-dot"></div>
+    <div class="marquee-item"><span>AWS & Cloud</span></div><div class="marquee-dot"></div>
+    <div class="marquee-item"><span>CRM & ERP</span></div><div class="marquee-dot"></div>
+    <div class="marquee-item"><span>n8n Automation</span></div><div class="marquee-dot"></div>
+    <div class="marquee-item"><span>Google Ads & SEO</span></div>
+  </div>
+</div>
+
+<!-- SERVIÇOS -->
+<section class="services-s s-wrap" id="servicos">
+  <div class="s-inner">
+    <div class="services-top reveal">
+      <div>
+        <span class="s-label">Ecossistema completo</span>
+        <h2 class="s-title">Tudo que sua empresa precisa,<br>em um único lugar</h2>
+      </div>
+      <p class="services-desc">Cada solução faz parte de um ecossistema integrado. Não são serviços avulsos — é uma plataforma que cresce junto com você.</p>
+    </div>
+    <div class="services-grid">
+      <div class="svc-card featured reveal">
+        <div>
+          <div class="svc-icon-wrap"><svg fill="none" viewBox="0 0 24 24" stroke="#A675FF" stroke-width="1.7"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93A10 10 0 0 0 12 2v2a8 8 0 0 1 5.66 2.34M4.93 19.07A10 10 0 0 0 12 22v-2a8 8 0 0 1-5.66-2.34"/><path d="M2 12H4a8 8 0 0 1 2.34-5.66L4.93 4.93A10 10 0 0 0 2 12zM22 12h-2a8 8 0 0 1-2.34 5.66l1.41 1.41A10 10 0 0 0 22 12z"/></svg></div>
+          <h3>Agentes de IA que trabalham por você 24/7</h3>
+          <p>Atendimento, qualificação de leads e processos operacionais automatizados com IA treinada no contexto do seu negócio. Integra nativamente com WhatsApp, CRM e ERP.</p>
+          <div class="svc-tags"><span class="tag">GPT-4o</span><span class="tag">Claude AI</span><span class="tag">WhatsApp</span><span class="tag">Automação 24/7</span></div>
+        </div>
+        <div class="svc-visual">
+          <div class="svc-visual-inner">
+            <div class="ai-bubble">💬 Olá! Como posso te ajudar com seu pedido?<div class="ai-dot" style="margin-top:6px"></div></div>
+            <div style="display:flex;flex-direction:column;gap:6px;align-self:flex-end">
+              <div class="ai-bubble right">Preciso de uma proposta para automação do meu time comercial.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="svc-card reveal reveal-delay-1">
+        <div class="svc-icon-wrap"><svg fill="none" viewBox="0 0 24 24" stroke="#5B5CFF" stroke-width="1.7"><rect x="3" y="3" width="18" height="14" rx="2"/><path d="M8 21h8M12 17v4"/><path d="M7 8h10M7 12h6"/></svg></div>
+        <h3>Sistemas & Plataformas Web</h3>
+        <p>ERPs sob medida, dashboards, portais e integrações. Arquitetura escalável que suporta o crescimento do seu negócio sem reescrever tudo no futuro.</p>
+        <div class="svc-tags"><span class="tag">Node.js</span><span class="tag">React</span><span class="tag">PostgreSQL</span></div>
+      </div>
+      <div class="svc-card reveal reveal-delay-2">
+        <div class="svc-icon-wrap"><svg fill="none" viewBox="0 0 24 24" stroke="#C084FC" stroke-width="1.7"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+        <h3>Site, Landing Pages & CRM</h3>
+        <p>Presença digital que converte e um CRM que centraliza cada oportunidade. Do tráfego à venda, rastreado em tempo real no seu dashboard.</p>
+        <div class="svc-tags"><span class="tag">Next.js</span><span class="tag">SEO</span><span class="tag">CRM</span></div>
+      </div>
+      <div class="svc-card reveal reveal-delay-3">
+        <div class="svc-icon-wrap"><svg fill="none" viewBox="0 0 24 24" stroke="#5B5CFF" stroke-width="1.7"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
+        <h3>Marketing & Growth Digital</h3>
+        <p>Tráfego pago, SEO e Google Meu Negócio integrados ao seu ecossistema — cada real investido em mídia rastreado até a venda fechada.</p>
+        <div class="svc-tags"><span class="tag">Meta Ads</span><span class="tag">Google Ads</span><span class="tag">SEO</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- METRICS -->
+<div class="metrics-s s-wrap reveal">
+  <div class="s-inner">
+    <div class="metrics-grid">
+      <div class="metric-item"><span class="metric-num" data-target="150">0</span><div class="metric-label">Empresas atendidas</div><div class="metric-sub">Nos últimos 3 anos</div></div>
+      <div class="metric-item"><span class="metric-num" data-target="98" data-suffix="%">0</span><div class="metric-label">Taxa de retenção</div><div class="metric-sub">Clientes que renovam todo mês</div></div>
+      <div class="metric-item"><span class="metric-num" data-target="3" data-suffix="×">0</span><div class="metric-label">ROI médio gerado</div><div class="metric-sub">Em 12 meses de parceria</div></div>
+      <div class="metric-item"><span class="metric-num" data-target="12">0</span><div class="metric-label">Dias para primeiro resultado</div><div class="metric-sub">Do contrato ao ar</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- COMO FUNCIONA -->
+<section class="how-s s-wrap" id="como-funciona">
+  <div class="s-inner">
+    <div class="how-header reveal">
+      <span class="s-label">Como funciona</span>
+      <h2 class="s-title">Não entregamos um projeto.<br>Evoluímos junto com você.</h2>
+      <p>Enquanto outras empresas entregam e somem, a Prisma funciona como um departamento de tecnologia interno — com ciclos mensais de otimização e escala.</p>
+    </div>
+    <div class="how-flow reveal">
+      <div class="how-step">
+        <div class="how-num">🔍<div class="how-badge">01</div></div>
+        <h4>Diagnóstico</h4>
+        <p>Mapeamos seu negócio, gargalos e oportunidades em uma call de 30 minutos.</p>
+      </div>
+      <div class="how-step">
+        <div class="how-num">🗺️<div class="how-badge">02</div></div>
+        <h4>Planejamento</h4>
+        <p>Definimos o roadmap com entregas, métricas e investimento fixo — sem surpresas.</p>
+      </div>
+      <div class="how-step">
+        <div class="how-num">⚡<div class="how-badge">03</div></div>
+        <h4>Implementação</h4>
+        <p>Sprints quinzenais com entregas reais. Você acompanha tudo em tempo real.</p>
+      </div>
+      <div class="how-step">
+        <div class="how-num">🛡️<div class="how-badge">04</div></div>
+        <h4>Suporte</h4>
+        <p>Time disponível via WhatsApp para qualquer dúvida ou ajuste necessário.</p>
+      </div>
+      <div class="how-step">
+        <div class="how-num">📈<div class="how-badge">05</div></div>
+        <h4>Otimização</h4>
+        <p>Análise mensal de métricas com ajustes estratégicos para melhorar resultados.</p>
+      </div>
+      <div class="how-step">
+        <div class="how-num">🚀<div class="how-badge">06</div></div>
+        <h4>Escala</h4>
+        <p>Expandimos o ecossistema conforme seu negócio cresce. Sempre um passo à frente.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features-s s-wrap" id="features">
+  <div class="s-inner">
+    <div class="features-header reveal">
+      <span class="s-label">A diferença PRISMA</span>
+      <h2 class="s-title">Um parceiro, não um fornecedor</h2>
+      <p class="section-desc">Enquanto você gerencia 5 fornecedores sem saber se estão alinhados, seus concorrentes têm tudo integrado com a Prisma — crescendo mais rápido e gastando menos.</p>
+    </div>
+    <div class="bento">
+      <div class="bento-card span2 reveal">
+        <div class="bento-icon">🎯</div>
+        <h4>Um único parceiro responsável por tudo</h4>
+        <p>Chega de coordenar agência de marketing, freelancer de TI e suporte separados. Um time integrado com visão unificada do seu negócio — sem gaps, sem culpa jogada de um lado para o outro.</p>
+        <div class="mini-chart">
+          <div class="mc-bar" style="--h:.3"></div><div class="mc-bar" style="--h:.5"></div><div class="mc-bar" style="--h:.4"></div><div class="mc-bar" style="--h:.75"></div><div class="mc-bar" style="--h:.6"></div><div class="mc-bar" style="--h:.9"></div><div class="mc-bar" style="--h:.8"></div><div class="mc-bar" style="--h:1"></div>
+        </div>
+      </div>
+      <div class="bento-card reveal reveal-delay-1">
+        <div class="bento-icon">🤖</div>
+        <h4>IA integrada em cada entrega</h4>
+        <p>Todo sistema, toda campanha, todo processo inclui automação inteligente. Menos custo operacional, mais resultado.</p>
+        <div class="mini-toggle">
+          <div class="toggle-row"><span class="toggle-label">Atendimento automatizado</span><div class="toggle-pill on"><div class="toggle-thumb"></div></div></div>
+          <div class="toggle-row"><span class="toggle-label">Qualificação de leads</span><div class="toggle-pill on"><div class="toggle-thumb"></div></div></div>
+          <div class="toggle-row"><span class="toggle-label">Relatórios automáticos</span><div class="toggle-pill on"><div class="toggle-thumb"></div></div></div>
+        </div>
+      </div>
+      <div class="bento-card reveal reveal-delay-1">
+        <div class="bento-icon">🔗</div>
+        <h4>Tudo conectado, tudo conversando</h4>
+        <p>Um lead captado no Instagram já entra no CRM, dispara a automação e aparece no dashboard automaticamente.</p>
+        <div class="integration-grid">
+          <div class="int-chip"><span>💬</span> WhatsApp</div><div class="int-chip"><span>📊</span> HubSpot</div>
+          <div class="int-chip"><span>📧</span> Gmail</div><div class="int-chip"><span>🛒</span> Shopify</div>
+          <div class="int-chip"><span>📋</span> Notion</div><div class="int-chip"><span>⚡</span> Zapier</div>
+        </div>
+      </div>
+      <div class="bento-card reveal">
+        <div class="bento-icon">📈</div>
+        <h4>ROI visível todo mês</h4>
+        <p>Toda decisão técnica medida por resultado de negócio. Dashboard em tempo real com os KPIs que importam — sem relatório de vaidade.</p>
+      </div>
+      <div class="bento-card span2 reveal reveal-delay-1">
+        <div class="bento-icon">💡</div>
+        <h4>Evolução contínua, não entrega pontual</h4>
+        <p>Não existe "fim de projeto". Cada mês o ecossistema fica mais inteligente, mais integrado e mais alinhado com onde sua empresa quer chegar.</p>
+        <div class="flow-nodes">
+          <div class="fnode purple">Mês 1</div><span class="farrow">→</span>
+          <div class="fnode violet">Mês 3</div><span class="farrow">→</span>
+          <div class="fnode white">Mês 6</div><span class="farrow">→</span>
+          <div class="fnode purple">Mês 12</div><span class="farrow">→</span>
+          <div class="fnode violet">Scale ∞</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ECOSSISTEMA -->
+<section class="eco-s s-wrap" id="ecossistema">
+  <div class="s-inner">
+    <div class="eco-header reveal">
+      <span class="s-label">O Ecossistema Prisma</span>
+      <h2 class="s-title">Tudo conversa entre si.<br>Tudo trabalha por você.</h2>
+      <p>Enquanto ferramentas isoladas geram silos de dados, o ecossistema Prisma conecta cada ponto da sua operação — e cada peça alimenta a próxima.</p>
+    </div>
+    <div class="eco-grid reveal">
+      <div class="eco-node"><span class="eco-icon">🌐</span><h5>Site & Landing Pages</h5><p>Captura leads qualificados</p></div>
+      <div class="eco-connector">→</div>
+      <div class="eco-hub"><div class="eco-icon">◈</div><h4>PRISMA Core</h4><p>Ecossistema integrado</p></div>
+      <div class="eco-connector">←</div>
+      <div class="eco-node"><span class="eco-icon">📊</span><h5>Dashboard</h5><p>Visão em tempo real</p></div>
+      <div class="eco-node"><span class="eco-icon">💬</span><h5>WhatsApp & CRM</h5><p>Atendimento automatizado</p></div>
+      <div class="eco-connector">↑</div>
+      <div class="eco-node" style="text-align:center"><span class="eco-icon">🤖</span><h5>IA & Automações</h5><p>Processos no piloto automático</p></div>
+      <div class="eco-connector">↑</div>
+      <div class="eco-node"><span class="eco-icon">📣</span><h5>Marketing Digital</h5><p>Ads, SEO e conteúdo</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- PROCESSO -->
+<section class="process-s s-wrap" id="processo">
+  <div class="s-inner">
+    <div class="reveal">
+      <span class="s-label">Jornada do cliente</span>
+      <h2 class="s-title">Do diagnóstico ao resultado<br>em semanas</h2>
+    </div>
+    <div class="process-layout">
+      <div class="process-steps">
+        <div class="process-step active" data-step="0"><div class="step-bar"></div><div class="step-num-wrap"><span>01</span></div><div class="step-content"><h4>Diagnóstico gratuito</h4><p>Call de 30 min para mapear seu negócio, gargalos e oportunidades. Sem compromisso.</p></div></div>
+        <div class="process-step" data-step="1"><div class="step-bar"></div><div class="step-num-wrap"><span>02</span></div><div class="step-content"><h4>Proposta personalizada</h4><p>Plano claro com escopo, prazo e investimento fixo. Você aprova antes de qualquer cobrança.</p></div></div>
+        <div class="process-step" data-step="2"><div class="step-num-wrap"><span>03</span></div><div class="step-content"><h4>Execução em sprints</h4><p>Entregas quinzenais com resultado real. Acompanhe tudo em painel dedicado em tempo real.</p></div></div>
+        <div class="process-step" data-step="3"><div class="step-num-wrap"><span>04</span></div><div class="step-content"><h4>Parceria contínua</h4><p>Após o lançamento, monitoramos métricas, otimizamos e evoluímos o ecossistema com você — todo mês.</p></div></div>
+      </div>
+      <div class="process-visual-panel">
+        <div class="pv-screen active" id="pv0">
+          <div class="pv-topbar"><div class="pv-dot" style="background:#FF5F57"></div><div class="pv-dot" style="background:#FEBC2E"></div><div class="pv-dot" style="background:#28C840"></div><span class="pv-title">prisma — diagnóstico.call</span></div>
+          <div class="pv-rows">
+            <div class="pv-row"><div class="pv-row-icon"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#A675FF" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div><span class="pv-row-label">Diagnóstico agendado</span><span class="pv-row-val">✓ Hoje</span></div>
+            <div class="pv-row"><div class="pv-row-icon"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#A675FF" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><span class="pv-row-label">Duração da call</span><span class="pv-row-val">30 min</span></div>
+            <div class="pv-row"><div class="pv-row-icon"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#A675FF" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div><span class="pv-row-label">Sem compromisso</span><span class="pv-row-val">Grátis</span></div>
+          </div>
+        </div>
+        <div class="pv-screen" id="pv1">
+          <div class="pv-topbar"><div class="pv-dot" style="background:#FF5F57"></div><div class="pv-dot" style="background:#FEBC2E"></div><div class="pv-dot" style="background:#28C840"></div><span class="pv-title">proposta — v1.0.pdf</span></div>
+          <div class="pv-rows">
+            <div class="pv-row"><div class="pv-row-icon"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#5B5CFF" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 12h8M8 8h8M8 16h5"/></svg></div><span class="pv-row-label">Escopo definido</span><span class="pv-row-val">100%</span></div>
+            <div class="pv-row"><div class="pv-row-icon"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#5B5CFF" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg></div><span class="pv-row-label">Prazo estimado</span><span class="pv-row-val">21 dias</span></div>
+            <div class="pv-row"><div class="pv-row-icon"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#5B5CFF" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div><span class="pv-row-label">Investimento</span><span class="pv-row-val">Fixo</span></div>
+          </div>
+        </div>
+        <div class="pv-screen" id="pv2">
+          <div class="pv-topbar"><div class="pv-dot" style="background:#FF5F57"></div><div class="pv-dot" style="background:#FEBC2E"></div><div class="pv-dot" style="background:#28C840"></div><span class="pv-title">sprint-2 — progresso</span></div>
+          <div class="pv-rows" style="gap:.5rem">
+            <div class="pv-row"><span class="pv-row-label">Design UI</span><span class="pv-row-val" style="color:#28C840">✓ Concluído</span></div>
+            <div class="pv-row"><span class="pv-row-label">Backend API</span><span class="pv-row-val">Em andamento</span></div>
+            <div class="pv-row"><span class="pv-row-label">Integrações</span><span class="pv-row-val" style="color:var(--muted)">Próxima sprint</span></div>
+          </div>
+          <div class="pv-chart"><div class="bar-col" style="height:40%"></div><div class="bar-col" style="height:70%"></div><div class="bar-col" style="height:55%"></div><div class="bar-col" style="height:90%"></div><div class="bar-col" style="height:65%"></div><div class="bar-col" style="height:80%"></div></div>
+        </div>
+        <div class="pv-screen" id="pv3">
+          <div class="pv-topbar"><div class="pv-dot" style="background:#FF5F57"></div><div class="pv-dot" style="background:#FEBC2E"></div><div class="pv-dot" style="background:#28C840"></div><span class="pv-title">dashboard — métricas</span></div>
+          <div class="pv-rows">
+            <div class="pv-row"><span class="pv-row-label">Leads gerados este mês</span><span class="pv-row-val" style="color:#28C840">↑ 87%</span></div>
+            <div class="pv-row"><span class="pv-row-label">Custo por lead</span><span class="pv-row-val" style="color:#28C840">↓ 43%</span></div>
+            <div class="pv-row"><span class="pv-row-label">Conversão</span><span class="pv-row-val">3.2×</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PLANOS -->
+<section class="plans-s s-wrap" id="planos">
+  <div class="s-inner">
+    <div class="plans-header reveal">
+      <span class="s-label">Planos</span>
+      <h2 class="s-title">Uma equipe e um ecossistema completo<br>por menos da metade de um salário</h2>
+      <p>Todos os planos incluem suporte, evolução contínua e acesso ao ecossistema integrado. Sem contrato de fidelidade.</p>
+    </div>
+    <div class="plans-grid">
+      <div class="plan-card reveal">
+        <div><div class="plan-name">Prisma Start</div><div class="plan-title">Presença digital profissional</div><div class="plan-desc">Para empresas que precisam de uma base sólida: site que converte, WhatsApp otimizado e presença nas redes.</div></div>
+        <div class="plan-divider"></div>
+        <ul class="plan-features">
+          <li>Site profissional com design premium</li>
+          <li>Hospedagem e manutenção inclusas</li>
+          <li>Suporte via WhatsApp</li>
+          <li>Configuração e otimização do WhatsApp Business</li>
+          <li>Google Meu Negócio configurado</li>
+          <li>Redes sociais: 1 post/semana</li>
+        </ul>
+        <a href="#contato" class="plan-cta ghost">Quero começar →</a>
+      </div>
+      <div class="plan-card featured reveal reveal-delay-1">
+        <div class="plan-badge">⭐ Mais escolhido</div>
+        <div><div class="plan-name">Prisma Growth</div><div class="plan-title">Ecossistema integrado completo</div><div class="plan-desc">Para empresas prontas para escalar: CRM, automações, SEO avançado e marketing integrado ao negócio.</div></div>
+        <div class="plan-divider"></div>
+        <ul class="plan-features">
+          <li>Tudo do plano Start</li>
+          <li>CRM integrado ao site e WhatsApp</li>
+          <li>Dashboard com relatórios em tempo real</li>
+          <li>SEO avançado + Google Meu Negócio</li>
+          <li>Automações de atendimento com IA</li>
+          <li>Redes sociais: 2 posts/semana</li>
+          <li>Até 1 Reels/semana com edição profissional</li>
+        </ul>
+        <a href="#" class="plan-cta primary" onclick="openQuiz(event)">Descobrir meu plano →</a>
+      </div>
+      <div class="plan-card reveal reveal-delay-2">
+        <div><div class="plan-name">Prisma Scale</div><div class="plan-title">Tecnologia sob medida</div><div class="plan-desc">Para empresas maiores que precisam de sistemas customizados, agentes de IA e integração total de processos.</div></div>
+        <div class="plan-divider"></div>
+        <ul class="plan-features">
+          <li>Sistemas e ERPs sob medida</li>
+          <li>Agentes de IA para processos operacionais</li>
+          <li>Dashboards com métricas em tempo real</li>
+          <li>APIs, integrações e aplicativos</li>
+          <li>Consultoria estratégica contínua</li>
+          <li>Plano de escala personalizado</li>
+        </ul>
+        <a href="#" class="plan-cta outline" onclick="openQuiz(event)">Falar com especialista →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DEPOIMENTOS -->
+<section class="test-s s-wrap" id="depoimentos">
+  <div class="s-inner">
+    <div class="test-header reveal">
+      <span class="s-label">Cases reais</span>
+      <h2 class="s-title">Empresas que cresceram com a PRISMA</h2>
+      <p>Resultado mensurável de quem trocou múltiplos fornecedores por um único ecossistema integrado.</p>
+    </div>
+    <div class="test-grid">
+      <div class="tc featured reveal">
+        <div class="tc-metric">↑ 87% mais leads em 60 dias</div>
+        <div class="tc-stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+        <p class="tc-quote">"A PRISMA eliminou 80% do trabalho manual da equipe comercial. O agente de IA qualifica leads no WhatsApp antes de chegar ao time de vendas. O impacto foi imediato e mensurável desde o primeiro mês."</p>
+        <div class="tc-author"><div class="tc-avatar">RS</div><div><span class="tc-name">Ricardo Santos</span><span class="tc-role">CEO · TechVend Soluções</span></div></div>
+      </div>
+      <div class="tc reveal reveal-delay-1">
+        <div class="tc-metric">3× aumento em conversão</div>
+        <div class="tc-stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+        <p class="tc-quote">"Em 3 meses, o site novo triplicou os leads qualificados. O que me surpreendeu foi a integração — CRM, WhatsApp e campanhas conversam entre si. Nenhuma outra agência entregou isso."</p>
+        <div class="tc-author"><div class="tc-avatar">MC</div><div><span class="tc-name">Marina Carvalho</span><span class="tc-role">Diretora Comercial · Grupo Nexus</span></div></div>
+      </div>
+      <div class="tc reveal reveal-delay-2">
+        <div class="tc-metric">ROI de 4.1× no primeiro ano</div>
+        <div class="tc-stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+        <p class="tc-quote">"A Prisma entende de negócio, não só de tecnologia. O sistema que construíram virou o coração da nossa operação. E eles continuam evoluindo ele todo mês sem custo adicional."</p>
+        <div class="tc-author"><div class="tc-avatar">FO</div><div><span class="tc-name">Felipe Oliveira</span><span class="tc-role">Fundador · B2B Accelerate</span></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA FINAL -->
+<section class="cta-s" id="contato">
+  <div class="cta-glow"></div>
+  <div class="cta-border-box reveal">
+    <span class="s-label">Comece hoje</span>
+    <h2>Pronto para ter um time de tecnologia<br><span class="gradient-text">trabalhando para você?</span></h2>
+    <p>Deixe seu e-mail e receba um diagnóstico gratuito personalizado. Nossa equipe entra em contato em menos de 2 horas.</p>
+    <div class="cta-form">
+      <input class="cta-input" type="email" id="ctaEmail" placeholder="seu@empresa.com.br">
+      <button class="btn-cta" onclick="submitCTA()">Quero diagnóstico grátis →</button>
+    </div>
+    <p class="cta-micro"><span>✓ Grátis e sem compromisso</span> &nbsp;·&nbsp; <span>✓ Resposta em até 2h</span> &nbsp;·&nbsp; <span>✓ Sem pitch de vendas</span></p>
+    <p id="ctaMsg" style="margin-top:1rem;font-size:.85rem;color:#A675FF;display:none">✅ Recebemos! Entraremos em contato em breve.</p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <div class="nav-logo" style="margin-bottom:.1rem">
+        <svg class="logo-mark" viewBox="0 0 34 34" fill="none">
+          <defs><linearGradient id="lg2" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#5B5CFF"/><stop offset="100%" stop-color="#A675FF"/></linearGradient></defs>
+          <path d="M17 2C8.716 2 2 8.716 2 17c0 4.07 1.6 7.76 4.2 10.46C8.2 29.8 11.1 31.4 14 32.2c.6.16 1.2-.2 1.4-.8.16-.6-.2-1.2-.8-1.4-2.5-.7-5-2.06-6.8-3.9C5.6 23.9 4.2 20.62 4.2 17 4.2 9.94 9.94 4.2 17 4.2S29.8 9.94 29.8 17c0 3.62-1.4 6.9-3.6 9.1-1.8 1.84-4.3 3.2-6.8 3.9-.6.18-.96.8-.8 1.4.18.6.8.96 1.4.8 2.9-.8 5.8-2.4 7.8-4.74C30.4 24.76 32 21.07 32 17 32 8.716 25.284 2 17 2z" fill="url(#lg2)" opacity=".5"/><circle cx="17" cy="17" r="5" fill="url(#lg2)"/><circle cx="17" cy="17" r="2.5" fill="#fff" opacity=".9"/>
+        </svg>
+        <span class="logo-text">PRISMA</span>
+      </div>
+      <p>Seu departamento de tecnologia completo — sistemas, IA, sites e marketing digital integrados para PMEs que querem resultados reais.</p>
+    </div>
+    <div class="footer-col">
+      <h5>Serviços</h5>
+      <ul><li><a href="#servicos">Sites & Landing Pages</a></li><li><a href="#servicos">Agentes de IA</a></li><li><a href="#servicos">Sistemas Web</a></li><li><a href="#servicos">Marketing Digital</a></li><li><a href="#servicos">CRM & Automações</a></li></ul>
+    </div>
+    <div class="footer-col">
+      <h5>Empresa</h5>
+      <ul><li><a href="#como-funciona">Como funciona</a></li><li><a href="#depoimentos">Cases</a></li><li><a href="#planos">Planos</a></li><li><a href="#ecossistema">Ecossistema</a></li></ul>
+    </div>
+    <div class="footer-col">
+      <h5>Contato</h5>
+      <ul><li><a href="#">WhatsApp</a></li><li><a href="#">E-mail</a></li><li><a href="#">LinkedIn</a></li><li><a href="#">Instagram</a></li></ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span class="footer-copy">© 2025 PRISMA. Todos os direitos reservados.</span>
+    <div class="footer-socials">
+      <a class="social-btn" href="#" aria-label="LinkedIn">in</a>
+      <a class="social-btn" href="#" aria-label="Instagram">ig</a>
+      <a class="social-btn" href="#" aria-label="WhatsApp">w</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  const c=document.getElementById('canvas-bg'),ctx=c.getContext('2d');
+  let W,H,pts=[];
+  function resize(){W=c.width=innerWidth;H=c.height=innerHeight}
+  resize();window.addEventListener('resize',resize);
+  function rr(a,b){return a+Math.random()*(b-a)}
+  for(let i=0;i<80;i++)pts.push({x:Math.random()*2000,y:Math.random()*2000,vx:rr(-.15,.15),vy:rr(-.15,.15),r:rr(.5,1.8),hue:Math.random()>.5?260:280});
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    pts.forEach(p=>{
+      p.x+=p.vx;p.y+=p.vy;
+      if(p.x<0)p.x=W;if(p.x>W)p.x=0;if(p.y<0)p.y=H;if(p.y>H)p.y=0;
+      ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle=`hsla(${p.hue},80%,70%,0.55)`;ctx.fill();
+    });
+    for(let i=0;i<pts.length;i++)for(let j=i+1;j<pts.length;j++){
+      const dx=pts[i].x-pts[j].x,dy=pts[i].y-pts[j].y,d=Math.sqrt(dx*dx+dy*dy);
+      if(d<120){ctx.beginPath();ctx.moveTo(pts[i].x,pts[i].y);ctx.lineTo(pts[j].x,pts[j].y);ctx.strokeStyle=`rgba(91,92,255,${(1-d/120)*0.12})`;ctx.lineWidth=.5;ctx.stroke();}
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+window.addEventListener('scroll',()=>document.getElementById('nav').classList.toggle('scrolled',scrollY>40));
+
+const ro=new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting)x.target.classList.add('visible')});},{threshold:.12});
+document.querySelectorAll('.reveal').forEach(el=>ro.observe(el));
+
+function animateCounter(el){
+  const target=+el.dataset.target,suffix=el.dataset.suffix||'';
+  let start=null;
+  function step(ts){if(!start)start=ts;const p=Math.min((ts-start)/1800,1),ease=1-Math.pow(1-p,4);el.textContent=Math.round(target*ease)+suffix;if(p<1)requestAnimationFrame(step);}
+  requestAnimationFrame(step);
+}
+const mo=new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting){animateCounter(x.target);mo.unobserve(x.target)}});},{threshold:.5});
+document.querySelectorAll('.metric-num').forEach(el=>mo.observe(el));
+
+const steps=document.querySelectorAll('.process-step'),panels=document.querySelectorAll('.pv-screen');
+steps.forEach(s=>s.addEventListener('click',()=>{const i=+s.dataset.step;steps.forEach((x,n)=>x.classList.toggle('active',n===i));panels.forEach((x,n)=>x.classList.toggle('active',n===i));}));
+let cur=0;setInterval(()=>{cur=(cur+1)%steps.length;steps.forEach((x,n)=>x.classList.toggle('active',n===cur));panels.forEach((x,n)=>x.classList.toggle('active',n===cur));},3500);
+
+document.querySelectorAll('.svc-card').forEach(c=>{c.addEventListener('mousemove',e=>{const r=c.getBoundingClientRect();c.style.setProperty('--mx',((e.clientX-r.left)/r.width*100)+'%');c.style.setProperty('--my',((e.clientY-r.top)/r.height*100)+'%');});});
+
+const bo=new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting)x.target.querySelectorAll('.mc-bar').forEach((b,i)=>setTimeout(()=>b.style.setProperty('--h',b.style.getPropertyValue('--h')||'.5'),i*80));});},{threshold:.3});
+document.querySelectorAll('.mini-chart').forEach(el=>bo.observe(el));
+
+// QUIZ
+const TOTAL=3;let currentStep=1,answers={};
+
+function buildProgress(){
+  const el=document.getElementById('quizProgress');el.innerHTML='';
+  for(let i=1;i<=TOTAL;i++){const d=document.createElement('div');d.className='quiz-dot'+(i<currentStep?' done':i===currentStep?' active':'');el.appendChild(d);}
+}
+
+function openQuiz(e){if(e)e.preventDefault();currentStep=1;answers={};document.querySelectorAll('.quiz-step').forEach(s=>s.classList.remove('active'));document.querySelector('[data-step="1"]').classList.add('active');buildProgress();document.getElementById('quizModal').classList.add('open');document.body.style.overflow='hidden';}
+function closeQuiz(){document.getElementById('quizModal').classList.remove('open');document.body.style.overflow='';}
+function selectOpt(btn,step){document.querySelectorAll(`[data-step="${step}"] .quiz-opt`).forEach(b=>b.classList.remove('selected'));btn.classList.add('selected');answers[step]=+btn.dataset.val;}
+
+function nextStep(){
+  if(currentStep<=TOTAL&&!answers[currentStep])return;
+  document.querySelectorAll('.quiz-step').forEach(s=>s.classList.remove('active'));
+  if(currentStep<TOTAL){currentStep++;document.querySelector(`[data-step="${currentStep}"]`).classList.add('active');buildProgress();}
+  else showResult();
+}
+function prevStep(){if(currentStep<=1)return;document.querySelectorAll('.quiz-step').forEach(s=>s.classList.remove('active'));currentStep--;document.querySelector(`[data-step="${currentStep}"]`).classList.add('active');buildProgress();}
+
+function showResult(){
+  const score=Object.values(answers).reduce((a,b)=>a+b,0);
+  let plan,title,desc;
+  if(score>=9){plan='Prisma Scale';title='Você precisa de tecnologia avançada e personalizada';desc='Pelos seus desafios, o Prisma Scale é ideal: sistemas sob medida, agentes de IA e consultoria estratégica contínua para escalar sem limites.';}
+  else if(score>=6){plan='Prisma Growth';title='Você está pronto para crescer com tecnologia integrada';desc='O Prisma Growth é ideal: CRM, automações, SEO avançado e dashboards em tempo real — um ecossistema completo por uma fração do custo de uma equipe interna.';}
+  else{plan='Prisma Start';title='Vamos construir sua base digital sólida';desc='O Prisma Start é o ponto de entrada perfeito: site profissional, WhatsApp otimizado e presença digital que converte — tudo gerenciado pela Prisma.';}
+  document.getElementById('quizResultBadge').textContent=plan;
+  document.getElementById('quizResultTitle').textContent=title;
+  document.getElementById('quizResultDesc').textContent=desc;
+  document.querySelectorAll('.quiz-step').forEach(s=>s.classList.remove('active'));
+  document.querySelector('[data-step="result"]').classList.add('active');
+  document.getElementById('quizProgress').innerHTML='';
+}
+
+async function submitQuiz(){
+  const email=document.getElementById('qEmail').value.trim();
+  if(!email){document.getElementById('qEmail').focus();return;}
+  const name=document.getElementById('qName').value.trim();
+  const phone=document.getElementById('qPhone').value.trim();
+  const plan=document.getElementById('quizResultBadge').textContent;
+  try{
+    await fetch('/api/quiz',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({answers:Object.entries(answers).map(([k,v])=>({step:k,value:v}))})});
+    await fetch('/api/lead',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,email,phone,plan})});
+  }catch(e){}
+  document.querySelectorAll('.quiz-step').forEach(s=>s.classList.remove('active'));
+  document.querySelector('[data-step="success"]').classList.add('active');
+}
+
+async function submitCTA(){
+  const email=document.getElementById('ctaEmail').value.trim();if(!email)return;
+  try{await fetch('/api/lead',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,source:'cta'})});}catch(e){}
+  document.getElementById('ctaEmail').value='';
+  document.getElementById('ctaMsg').style.display='block';
+}
+
+document.getElementById('quizModal').addEventListener('click',function(e){if(e.target===this)closeQuiz();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeQuiz();});
+</script>
+</body>
+</html>

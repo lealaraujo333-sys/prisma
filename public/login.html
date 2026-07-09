@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PRISMA — Acesso de Parceiros</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--p:#5B5CFF;--v:#A675FF;--pk:#C084FC;--dark:#08080F;--card:#12122A;--border:rgba(91,92,255,0.18);--muted:rgba(255,255,255,0.45)}
+body{background:var(--dark);color:#fff;font-family:'Inter',sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+canvas{position:fixed;inset:0;z-index:0;opacity:.5;pointer-events:none}
+.login-wrap{position:relative;z-index:1;width:100%;max-width:420px;padding:1.5rem}
+.login-logo{display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:2.5rem}
+.logo-text{font-size:1.2rem;font-weight:800;letter-spacing:.1em}
+.login-box{background:var(--card);border:1px solid var(--border);border-radius:24px;padding:2.5rem;position:relative;overflow:hidden}
+.login-box::before{content:'';position:absolute;top:-1px;left:15%;right:15%;height:1px;background:linear-gradient(90deg,transparent,var(--p),var(--v),transparent)}
+.login-box::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% -10%,rgba(91,92,255,.1) 0%,transparent 65%);pointer-events:none}
+.login-title{font-size:1.4rem;font-weight:800;margin-bottom:.4rem}
+.login-sub{font-size:.87rem;color:var(--muted);margin-bottom:2rem}
+.field{margin-bottom:1.1rem}
+.field label{display:block;font-size:.78rem;font-weight:600;letter-spacing:.06em;color:rgba(255,255,255,.5);text-transform:uppercase;margin-bottom:.5rem}
+.field input{width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:#fff;padding:.875rem 1.1rem;border-radius:12px;font-size:.95rem;font-family:'Inter',sans-serif;outline:none;transition:border-color .2s,box-shadow .2s}
+.field input::placeholder{color:rgba(255,255,255,.2)}
+.field input:focus{border-color:rgba(91,92,255,.6);box-shadow:0 0 0 3px rgba(91,92,255,.12)}
+.field-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem}
+.forgot{font-size:.78rem;color:var(--v);text-decoration:none;font-weight:500}
+.forgot:hover{color:#C084FC}
+.btn-login{width:100%;background:linear-gradient(135deg,var(--p),var(--v));color:#fff;border:none;padding:1rem;border-radius:12px;font-size:1rem;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;margin-top:1.5rem;box-shadow:0 4px 24px rgba(91,92,255,.4);transition:all .25s;position:relative;overflow:hidden}
+.btn-login:hover{transform:translateY(-1px);box-shadow:0 8px 32px rgba(91,92,255,.55)}
+.btn-login:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.login-divider{display:flex;align-items:center;gap:.75rem;margin:1.5rem 0}
+.login-divider span{font-size:.75rem;color:rgba(255,255,255,.2);white-space:nowrap}
+.login-divider::before,.login-divider::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.07)}
+.error-msg{background:rgba(255,80,80,.1);border:1px solid rgba(255,80,80,.25);border-radius:10px;padding:.75rem 1rem;font-size:.83rem;color:#ff8080;margin-bottom:1rem;display:none}
+.login-footer{text-align:center;margin-top:1.5rem;font-size:.78rem;color:rgba(255,255,255,.25)}
+.login-footer a{color:var(--v);text-decoration:none}
+</style>
+</head>
+<body>
+<canvas id="bg"></canvas>
+<div class="login-wrap">
+  <div class="login-logo">
+    <svg width="32" height="32" viewBox="0 0 34 34" fill="none">
+      <defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#5B5CFF"/><stop offset="100%" stop-color="#A675FF"/></linearGradient></defs>
+      <path d="M17 2C8.716 2 2 8.716 2 17c0 4.07 1.6 7.76 4.2 10.46C8.2 29.8 11.1 31.4 14 32.2c.6.16 1.2-.2 1.4-.8.16-.6-.2-1.2-.8-1.4-2.5-.7-5-2.06-6.8-3.9C5.6 23.9 4.2 20.62 4.2 17 4.2 9.94 9.94 4.2 17 4.2S29.8 9.94 29.8 17c0 3.62-1.4 6.9-3.6 9.1-1.8 1.84-4.3 3.2-6.8 3.9-.6.18-.96.8-.8 1.4.18.6.8.96 1.4.8 2.9-.8 5.8-2.4 7.8-4.74C30.4 24.76 32 21.07 32 17 32 8.716 25.284 2 17 2z" fill="url(#lg)" opacity=".5"/>
+      <circle cx="17" cy="17" r="5" fill="url(#lg)"/><circle cx="17" cy="17" r="2.5" fill="#fff" opacity=".9"/>
+    </svg>
+    <span class="logo-text">PRISMA</span>
+  </div>
+  <div class="login-box">
+    <h1 class="login-title">Área de Parceiros</h1>
+    <p class="login-sub">Acesse seu painel de gestão</p>
+    <div class="error-msg" id="errorMsg">E-mail ou senha incorretos.</div>
+    <div class="field">
+      <label>E-mail</label>
+      <input type="email" id="email" placeholder="seu@email.com" autocomplete="email">
+    </div>
+    <div class="field">
+      <div class="field-row">
+        <label>Senha</label>
+        <a href="#" class="forgot">Esqueci a senha</a>
+      </div>
+      <input type="password" id="password" placeholder="••••••••" autocomplete="current-password">
+    </div>
+    <button class="btn-login" id="btnLogin" onclick="doLogin()">Entrar no painel →</button>
+    <div class="login-footer">Problemas de acesso? <a href="mailto:suporte@prisma.com.br">Fale com o suporte</a></div>
+  </div>
+</div>
+<script>
+// Canvas bg
+(function(){
+  const c=document.getElementById('bg'),ctx=c.getContext('2d');
+  let W,H,pts=[];
+  function resize(){W=c.width=innerWidth;H=c.height=innerHeight}
+  resize();window.addEventListener('resize',resize);
+  for(let i=0;i<60;i++)pts.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.2,vy:(Math.random()-.5)*.2,r:Math.random()*1.5+.5});
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    pts.forEach(p=>{p.x+=p.vx;p.y+=p.vy;if(p.x<0)p.x=W;if(p.x>W)p.x=0;if(p.y<0)p.y=H;if(p.y>H)p.y=0;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle='rgba(91,92,255,0.5)';ctx.fill();});
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+// Enter key
+document.addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+
+async function doLogin(){
+  const email=document.getElementById('email').value.trim();
+  const password=document.getElementById('password').value;
+  const btn=document.getElementById('btnLogin');
+  const err=document.getElementById('errorMsg');
+  if(!email||!password)return;
+  btn.disabled=true;btn.textContent='Entrando...';err.style.display='none';
+  try{
+    const res=await fetch('/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password})});
+    const data=await res.json();
+    if(res.ok&&data.token){
+      localStorage.setItem('prisma_token',data.token);
+      localStorage.setItem('prisma_user',JSON.stringify(data.user));
+      window.location.href='/painel.html';
+    } else {
+      err.textContent=data.error||'E-mail ou senha incorretos.';
+      err.style.display='block';
+      btn.disabled=false;btn.textContent='Entrar no painel →';
+    }
+  }catch(e){
+    err.textContent='Erro de conexão. Tente novamente.';
+    err.style.display='block';
+    btn.disabled=false;btn.textContent='Entrar no painel →';
+  }
+}
+</script>
+</body>
+</html>
