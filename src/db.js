@@ -138,6 +138,37 @@ CREATE TABLE IF NOT EXISTS time_entries (
 );
 
 CREATE INDEX IF NOT EXISTS idx_time_entries_task_id ON time_entries(task_id);
+
+-- ── CAMPOS PERSONALIZÁVEIS ───────────────────────────────────────
+-- Definições de campos custom (admin cria/edita em Configurações) +
+-- coluna custom_fields (JSONB) em cada tabela que recebe valores.
+CREATE TABLE IF NOT EXISTS custom_field_defs (
+  id BIGINT PRIMARY KEY,
+  entity_type TEXT NOT NULL, -- 'contact' | 'contract' | 'project' | 'task'
+  key TEXT NOT NULL,
+  label TEXT NOT NULL,
+  field_type TEXT NOT NULL DEFAULT 'text', -- text|textarea|number|date|select|multiselect|boolean|file
+  options JSONB DEFAULT '[]'::jsonb,
+  required BOOLEAN DEFAULT false,
+  position INT DEFAULT 0,
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_custom_field_defs_entity_key ON custom_field_defs(entity_type, key);
+
+ALTER TABLE contacts  ADD COLUMN IF NOT EXISTS custom_fields JSONB DEFAULT '{}'::jsonb;
+ALTER TABLE contracts ADD COLUMN IF NOT EXISTS custom_fields JSONB DEFAULT '{}'::jsonb;
+ALTER TABLE projects  ADD COLUMN IF NOT EXISTS custom_fields JSONB DEFAULT '{}'::jsonb;
+ALTER TABLE tasks     ADD COLUMN IF NOT EXISTS custom_fields JSONB DEFAULT '{}'::jsonb;
+
+-- ── MÉTRICAS DO DASHBOARD (toggle on/off + ordem) ────────────────
+-- Não é um construtor de fórmulas: cada linha liga/desliga e ordena
+-- um card já pré-calculado no front (ver metric_key em painel.html).
+CREATE TABLE IF NOT EXISTS dashboard_metric_settings (
+  metric_key TEXT PRIMARY KEY,
+  enabled BOOLEAN DEFAULT true,
+  position INT DEFAULT 0
+);
 `;
 
 async function initSchema() {

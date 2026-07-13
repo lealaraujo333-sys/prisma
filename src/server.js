@@ -31,6 +31,7 @@ const contractsRouter = require('./routes/contracts')();
 const whatsappRouter = require('./routes/whatsapp')(io);
 const projectsRouter = require('./routes/projects');
 const tasksRouter = require('./routes/tasks');
+const customFieldsRouter = require('./routes/custom-fields');
 
 app.use('/api/auth', authRouter);
 app.use('/api/crm', requireAuth, crmRouter);
@@ -38,6 +39,7 @@ app.use('/api/contracts', requireAuth, contractsRouter);
 app.use('/api/whatsapp', requireAuth, whatsappRouter);
 app.use('/api/projects', requireAuth, projectsRouter);
 app.use('/api/tasks', requireAuth, tasksRouter);
+app.use('/api/custom-fields', requireAuth, customFieldsRouter);
 
 io.on('connection', (socket) => {
   console.log('🔌 Cliente conectado ao socket:', socket.id);
